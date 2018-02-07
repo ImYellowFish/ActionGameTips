@@ -163,6 +163,7 @@ API参考:
 
 <https://github.com/ImYellowFish/Unity3d-Finite-State-Machine>
 
+![alt text][fsmDebug]
 
 # 3. 连续技和记忆输入
 
@@ -388,3 +389,4 @@ inline fixed3 Rim(FragmentCommonData s) {
 [shaderRim]: ./md_image/shaderRim.png "Shader Rim"
 [animEvent]: ./md_image/animEvent.jpg "Animation Events"
 [skillPhase]: ./md_image/skillPhase.jpg "Skill Phase"
+[fsmDebug]: ./md_image/fsmDebug.png "FSM Debug"
