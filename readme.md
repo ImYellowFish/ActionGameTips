@@ -23,9 +23,26 @@
 扩展以后还可以支持时间回溯 (参考Braid)，需要用到帧同步或者状态同步.
 
 #### 实现时需要注意的点:
-    * 动画系统 –> Animator speed
-    * 粒子系统 -> Simulate 或者 simulationSpeed
-    * 需要提供Yield return waitForLocalSeconds方法，延时操作都需要用这个
+* 动画系统 –> Animator speed
+* 粒子系统 -> Simulate 或者 simulationSpeed
+* 需要提供Yield return waitForLocalSeconds方法，延时操作都需要用这个
+* 当多个操作同时改变TimeScale的时候，需要根据优先级决定采用哪个timeScale.
+
+```csharp
+public interface ITimeZone {
+    float relativeTimeScale { get; set; }
+    float timeScale {get; set;}
+    float deltaTime {get;}
+    float fixedDeltaTime {get;}
+
+    // we need to handle multiple sources of timeScale change.
+    void ChangeTimeScale(float newTimeScale, int priority);
+
+    // Sometimes we need to tween timeScale, such as bullet time.
+    // Same as above, we need to handle multiple sources by priority.
+    void TweenTimeScale(ITweenInfo tweenInfo, int priority);
+}
+```
 
 ### 卡帧动画
 ```csharp
@@ -36,7 +53,7 @@ void DoUpdate(){
 ### 卡帧特效
 
 通用方案下，每个粒子系统的TimeScale需要单独调整
-* Unity 5: 
+#### Unity 5: 
 ```csharp
 IEnumerator PlayEffectCrt(float duration){
     if(hero.localTimeScale == 1)
@@ -51,10 +68,13 @@ IEnumerator PlayEffectCrt(float duration){
 }
 ```
 
-Simulate()方法会产生大量GC.
+注意: Simulate()方法会产生大量GC.
 
-* Unity 2017: 
+#### Unity 2017: 
+
+```csharp
 particleSystem.main.simulationSpeed = hero.localTimeScale;
+```
 
 某些特效可能不受TimeScale影响，始终按照正常速度播放
 
@@ -180,7 +200,7 @@ Input传入攻击的时候，如果玩家就绪，但是距离要求不满足，
 
 * 不要让策划拍脑子想，程序制定的规则肯定比策划靠谱
 
-特殊规则例如：
+### 特殊规则例如：
 * 构成连续技的可以取消前一技能的后摇
 * 某些技能可以取消大部分技能的任何阶段（比如闪避）
 * 某些技能可以取消某些硬直状态(比如受身取消倒地)
